@@ -22,7 +22,7 @@
       <!-- Section with form to search weather by city -->
       <section>
         <h2>Search for a City:</h2>
-        <form id="form-weather">
+        <form method="post" id="form-weather">
           <div class="form-group">
             <input type="text" class="form-control" required placeholder="Enter city name" 
             name="cityname" id="city-name" pattern="[a-zA-Z0-9 ]+">
@@ -36,6 +36,11 @@
       </section>
     </div> 
     <div class="col-12 col-md-9">
+      <div id="error-code"></div>
+      <section id="current-weather">
+      </section>
+      <section id="future-weather">
+      </section>
     </div> 
   </div>   
  </div>   
