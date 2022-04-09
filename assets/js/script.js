@@ -6,27 +6,21 @@ var sectionFutureWeather = document.querySelector('#future-weather');
 var sectionSearchHistory = document.querySelector('#searchhistory');
 var txtErrorCode = document.querySelector('#error-code');
 
-function showWeather(cityName){
+// Get latitude and longitude for city 
+function getCoOrdFromAPI(cityName){
     sectionCurrentWeather.setAttribute('class', 'border');
     let endpointURL = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + 
     APIKey + "&units=imperial";
-    let data = getAPIData(endpointURL);    
-    if(data)
-    {
-        console.log(data);
-    }    
-}
 
-// Function to connect any endpointURL and return data or handle error
-function getAPIData(endpointURL)
-{
     fetch(endpointURL)
-    .then(function (response) {
-        console.log(response);
+    .then(function (response) {        
       if (response.ok) {
           response.json().then(function (data) {
-          txtErrorCode.textContent = "";
-          return data;
+          txtErrorCode.textContent = "";    
+          var cityFullName = data.name;                
+          let lat = data.coord.lat;
+          let lon = data.coord.lon;
+          getWeatherFromAPI(cityFullName, lat, lon); 
         });
       } else {
           txtErrorCode.textContent = "There was an error retrieving data: " + response.statusText;        
@@ -35,6 +29,61 @@ function getAPIData(endpointURL)
     .catch(function (error) {
           txtErrorCode.textContent = "There was an error connecting API";        
     });
+}
+
+// Function to connect OpenWeather One Call API and get weather data
+function getWeatherFromAPI(cityFullName, lat, lon)
+{
+    let endpointURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&appid=" + 
+    APIKey + "&units=imperial";
+    fetch(endpointURL)
+    .then(function (response) {        
+      if (response.ok) {
+          response.json().then(function (data) {
+          txtErrorCode.textContent = "";        
+          displayWeather(cityFullName, data);
+        });
+      } else {
+          txtErrorCode.textContent = "There was an error retrieving data: " + response.statusText;        
+      }
+    })
+    .catch(function (error) {
+          txtErrorCode.textContent = "There was an error connecting API";        
+    });
+}
+// display weather data to page
+function displayWeather(cityFullName, data)
+{    
+    sectionCurrentWeather.innerHTML = '';
+    sectionFutureWeather.innerHTML = '';
+    
+    var divCurrentWeather  = document.createElement('div');
+    divCurrentWeather.setAttribute('class', 'p-2');
+
+    var headerEl  = document.createElement('h2');
+    headerEl.textContent = cityFullName;
+    headerEl.textContent += ' (' + 
+    moment.unix(data.current.dt).format('MM/DD/YYYY') + ')'; // date
+    divCurrentWeather.append(headerEl);
+
+    var pEl  = document.createElement('p');
+    pEl.innerHTML = 'Temp: ' + data.current.temp + "&deg;F";    
+    divCurrentWeather.append(pEl);
+
+    var pEl  = document.createElement('p');
+    pEl.textContent = 'Wind: ' + data.current.wind_speed + " MPH";    
+    divCurrentWeather.append(pEl);    
+
+    var pEl  = document.createElement('p');
+    pEl.textContent = 'Humidity: ' + data.current.humidity + " %";    
+    divCurrentWeather.append(pEl);    
+
+    var pEl  = document.createElement('p');
+    pEl.innerHTML = 'UV Index: ';
+    pEl.innerHTML += '<span class="btn-success rounded">' + data.current.uvi + '</span>';        
+    divCurrentWeather.append(pEl);    
+
+    sectionCurrentWeather.append(divCurrentWeather);
 }
 // Store history to local storages
 function saveSearchHistory(cityName){
@@ -68,6 +117,7 @@ function displayCityInHistory(cityName)
     var buttonEl  = document.createElement("button");
     buttonEl.textContent = cityName;
     buttonEl.setAttribute('class', 'btn btn-secondary btn-block');
+    buttonEl.setAttribute('data-value', cityName);
     sectionSearchHistory.append(buttonEl);
 }
 
@@ -89,8 +139,16 @@ formWeather.addEventListener('submit', function(e){
     e.preventDefault();
     var cityName = txtCityName.value;           
     txtCityName.value = '';
-    showWeather(cityName);
+    getCoOrdFromAPI(cityName);
     saveSearchHistory(cityName);
+})
+
+// button with city name from history list handle event listener
+sectionSearchHistory.addEventListener('click', function(event) {
+    var element = event.target;  
+    var cityName = element.getAttribute("data-value");
+    getCoOrdFromAPI(cityName);
+    saveSearchHistory(cityName);    
 })
 
 init();
