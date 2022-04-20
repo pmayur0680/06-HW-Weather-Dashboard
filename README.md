@@ -4,8 +4,8 @@ This is a home work done by a student of Coding Boot Camp - University of Texas 
 ## License
 Distributed under the MIT License. See LICENSE.txt for more information.
 ## Project Links
-Code Repo: https://github.com/pmayur0680/06-HW-Weather-Dashboard<br>
-Live Site: https://pmayur0680.github.io/06-HW-Weather-Dashboard/
+Code Repo: https://github.com/pmayur0680/Weather-Dashboard<br>
+Live Site: https://pmayur0680.github.io/Weather-Dashboard/
 ## Screenshots
 ![Alt text](https://user-images.githubusercontent.com/101486770/162600731-297904e5-8724-4d36-97f3-f0f6b9bca28d.png?raw=true "Weather Dashboard")
 ## Acknowledgments
